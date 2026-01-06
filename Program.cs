@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EggstasyApp
 {
@@ -25,6 +26,7 @@ namespace EggstasyApp
                 Console.WriteLine("1. Create order");
                 Console.WriteLine("2. Add dish to order");
                 Console.WriteLine("3. Remove dish from order");
+                Console.WriteLine("4. Close order");
                 Console.WriteLine("5. View all orders");
                 Console.WriteLine("0. Exit");
                 Console.Write("Select: ");
@@ -35,6 +37,7 @@ namespace EggstasyApp
                     case "1": CreateOrder(); break;
                     case "2": ModifyOrder(true); break;
                     case "3": ModifyOrder(false); break;
+                    case "4": CloseOrder(); break;
                     case "5": ViewOrders(); break;
                     case "0":
                         Console.WriteLine("Press Enter to exit...");
@@ -63,6 +66,12 @@ namespace EggstasyApp
             foreach (var o in Orders)
             {
                 Console.WriteLine($"Order #{o.OrderNumber} - {o.Status}");
+                if (o.Dishes.Count > 0)
+                {
+                    for (int i = 0; i < o.Dishes.Count; i++)
+                        Console.WriteLine($"{i + 1}. {o.Dishes[i].Name} - ${o.Dishes[i].Price}");
+                    Console.WriteLine($"Total: ${o.Dishes.Sum(d => d.Price)}");
+                }
             }
         }
 
@@ -78,10 +87,7 @@ namespace EggstasyApp
             Console.WriteLine("0. Back");
             Console.Write("Choose dish number: ");
             if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 0 || choice > Menu.Count)
-            {
-                Console.WriteLine("Invalid choice.");
                 return;
-            }
             if (choice == 0) return;
 
             if (add)
@@ -90,15 +96,20 @@ namespace EggstasyApp
                 order.Dishes.RemoveAt(choice - 1);
         }
 
+        static void CloseOrder()
+        {
+            var order = SelectOrder();
+            if (order == null) return;
+
+            order.Status = "Closed";
+            Console.WriteLine($"Order #{order.OrderNumber} closed.");
+        }
+
         static Order SelectOrder()
         {
             if (Orders.Count == 0)
-            {
-                Console.WriteLine("No orders available.");
                 return null;
-            }
 
-            Console.WriteLine("Orders:");
             foreach (var o in Orders)
                 Console.WriteLine($"#{o.OrderNumber} - {o.Status}");
 
