@@ -80,21 +80,42 @@ namespace EggstasyApp
             var order = SelectOrder();
             if (order == null) return;
 
-            Console.WriteLine("Menu:");
-            for (int i = 0; i < Menu.Count; i++)
-                Console.WriteLine($"{i + 1}. {Menu[i].Name} - ${Menu[i].Price}");
-
-            Console.WriteLine("0. Back");
-            Console.Write("Choose dish number: ");
-            if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 0 || choice > Menu.Count)
-                return;
-            if (choice == 0) return;
-
             if (add)
+            {
+                Console.WriteLine("Menu:");
+                for (int i = 0; i < Menu.Count; i++)
+                    Console.WriteLine($"{i + 1}. {Menu[i].Name} - ${Menu[i].Price}");
+
+                Console.WriteLine("0. Back");
+                Console.Write("Choose dish number: ");
+                if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 0 || choice > Menu.Count)
+                    return;
+                if (choice == 0) return;
+
                 order.Dishes.Add(Menu[choice - 1]);
+            }
             else
+            {
+                if (order.Dishes.Count == 0)
+                {
+                    Console.WriteLine("Order has no dishes.");
+                    return;
+                }
+
+                Console.WriteLine("Dishes in order:");
+                for (int i = 0; i < order.Dishes.Count; i++)
+                    Console.WriteLine($"{i + 1}. {order.Dishes[i].Name} - ${order.Dishes[i].Price}");
+
+                Console.WriteLine("0. Back");
+                Console.Write("Choose dish number to remove: ");
+                if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 0 || choice > order.Dishes.Count)
+                    return;
+                if (choice == 0) return;
+
                 order.Dishes.RemoveAt(choice - 1);
+            }
         }
+
 
         static void CloseOrder()
         {
